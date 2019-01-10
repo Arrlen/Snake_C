@@ -10,7 +10,7 @@ class CSnake:public CFramedWindow
 private:
   vector <CPoint> snakebody;
   CPoint food;
-  int dirx,diry,gamemode;
+  int dirx,diry,gamemode,points;
 
 public:
   CSnake(CRect r, char _c = ' ');
@@ -19,6 +19,9 @@ public:
   void drawsnake();
   void snakemovement();
   void snaketeleport();
+  void foodgenerator();
+  void snakeeat();
+  void snakesuicide();
 };
 
 #endif

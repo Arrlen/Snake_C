@@ -1,6 +1,7 @@
 #include "snake.h"
 #include "screen.h"
-
+#include <time.h>
+#include <unistd.h>
 CSnake::CSnake(CRect r, char _c /*=' '*/):
   CFramedWindow(r, _c)
 {
@@ -8,11 +9,14 @@ CSnake::CSnake(CRect r, char _c /*=' '*/):
    snakebody.push_back(CPoint(15,16));
    dirx=1,diry=0;
    gamemode=1;
+   points=1;
+   food.x=10;
+   food.y=5;
 }
 void CSnake::paint(){
     CFramedWindow::paint();
     gotoyx(geom.topleft.y-1,geom.topleft.x);
-    printl(" Level: %d ",1);
+    printl(" Level: %d ",points);
     if(gamemode==1){
     gotoyx(geom.topleft.y+4,geom.topleft.x+4);
     printl("h - toggle help");
@@ -50,8 +54,13 @@ void CSnake::paint(){
     printl("*      *   *  *****  *****  *****");
     }
     else if(gamemode==3){
+    usleep(120000-(5000*points));
     snakemovement();
     drawsnake();
+    gotoyx(geom.topleft.y+food.y,geom.topleft.x+food.x);
+    printc('*');
+    snakesuicide();
+    snakeeat();
     }
     else if(gamemode==4){
     gotoyx(geom.topleft.y+5,geom.topleft.x+4);
@@ -63,9 +72,34 @@ void CSnake::paint(){
     gotoyx(geom.topleft.y+8,geom.topleft.x+4);
     printl("Press r to return to main menu");
     
-   } 
+   }
+   else if(gamemode==5){
+   gotoyx(geom.topleft.y+4,geom.topleft.x+4);
+   printl("YOUR SCORE %d",points);
+   gotoyx(geom.topleft.y+6,geom.topleft.x+4);
+    printl("*****  *****  ** **  *****");
+    gotoyx(geom.topleft.y+7,geom.topleft.x+4);
+    printl("*      *   *  * * *  *    ");
+    gotoyx(geom.topleft.y+8,geom.topleft.x+4);
+    printl("*****  *****  *   *  *****");
+    gotoyx(geom.topleft.y+9,geom.topleft.x+4);
+    printl("*   *  *   *  *   *  *    ");
+    gotoyx(geom.topleft.y+10,geom.topleft.x+4);
+    printl("*****  *   *  *   *  *****");
+    gotoyx(geom.topleft.y+12,geom.topleft.x+4);
+    printl("***** *       *  *****  *****");
+    gotoyx(geom.topleft.y+13,geom.topleft.x+4);
+    printl("*   *  *     *   *      *   *");
+    gotoyx(geom.topleft.y+14,geom.topleft.x+4);
+    printl("*   *   *   *    *****  *****");
+    gotoyx(geom.topleft.y+15,geom.topleft.x+4);
+    printl("*   *    * *     *      *   *");
+    gotoyx(geom.topleft.y+16,geom.topleft.x+4);
+    printl("*****     *      *****  *    *");
+   }
 }
 bool CSnake::handleEvent(int key){
+    
     if(key==KEY_UP){
        dirx=0,diry=-1;
     }
@@ -85,8 +119,8 @@ bool CSnake::handleEvent(int key){
         else if(gamemode==3){
          gamemode=2;
         }
-    else if(gamemode==2){
-       gamemode=3;
+        else if(gamemode==2){
+         gamemode=3;
     }else
     return false;
     }
@@ -99,6 +133,7 @@ bool CSnake::handleEvent(int key){
     snakebody.push_back(CPoint(15,16));
     dirx=1,diry=0;
     gamemode=1;
+    points=1;
 
     }
     return true;
@@ -127,5 +162,40 @@ void CSnake::drawsnake(){
          printc('o');
      }
      
-
 }
+void CSnake::foodgenerator(){
+     srand(time(NULL));
+     food.x=rand()%geom.size.x-1;
+     food.y=rand()%geom.size.y-1;
+     unsigned int i=0;
+     while(i<snakebody.size()){
+         if(snakebody[i].x==food.x && snakebody[i].y==food.y){
+             food.x=rand()%(geom.size.x-2)+1;
+             food.y=rand()%(geom.size.y-2)+1;
+             
+         }
+         i++;
+     }
+     
+}
+void CSnake::snakeeat(){
+     if(snakebody[0].x==food.x && snakebody[0].y==food.y){
+        points=points+1;
+        snakebody.push_back(snakebody[snakebody.size()-1]);
+        foodgenerator();
+        
+     }
+}
+void CSnake::snakesuicide(){
+      unsigned int i=1;
+      while(i<snakebody.size()){
+         if(snakebody[0].x==snakebody[i].x && snakebody[0].y==snakebody[i].y){
+             gamemode=5;
+            
+             
+         }
+         i++;
+     }
+    
+}
+
