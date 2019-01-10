@@ -101,16 +101,24 @@ void CSnake::paint(){
 bool CSnake::handleEvent(int key){
     
     if(key==KEY_UP){
+      if(diry!=1){
        dirx=0,diry=-1;
+      }
     }
     else if(key==KEY_LEFT){
+       if(dirx!=1){
        dirx=-1,diry=0;
+       }
     }
     else if(key==KEY_RIGHT){
+       if(dirx!=-1){
        dirx=1,diry=0;
+       }
     }
     else if(key==KEY_DOWN){
+       if(diry!=-1){
        dirx=0,diry=1;
+       }
     }
     else if(key=='p'){
         if(gamemode==1){
