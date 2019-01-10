@@ -8,11 +8,17 @@
 class CSnake:public CFramedWindow
 {
 private:
-  
+  vector <CPoint> snakebody;
+  CPoint food;
+  int dirx,diry,gamemode;
 
 public:
   CSnake(CRect r, char _c = ' ');
   void paint();
+  bool handleEvent(int key);
+  void drawsnake();
+  void snakemovement();
+  void snaketeleport();
 };
 
 #endif
